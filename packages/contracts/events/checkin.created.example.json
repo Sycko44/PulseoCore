@@ -1,0 +1,25 @@
+{
+  "event": "checkin.created",
+  "version": "1.0",
+  "occurred_at": "2026-04-05T12:00:00Z",
+  "actor": {
+    "type": "user",
+    "id": "usr_123"
+  },
+  "subject": {
+    "type": "checkin",
+    "id": "chk_123"
+  },
+  "data": {
+    "mood": 6,
+    "energy": 5,
+    "cravings": 3,
+    "sleepHours": 7.5,
+    "notes": "Morning check-in"
+  },
+  "meta": {
+    "source": "mobile",
+    "environment": "staging",
+    "trace_id": "trace_123"
+  }
+}
