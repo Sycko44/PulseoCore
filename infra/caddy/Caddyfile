@@ -1,0 +1,21 @@
+{
+  admin off
+}
+
+(api_common) {
+  encode zstd gzip
+  reverse_proxy api:8000
+}
+
+pulseo.me {
+  root * /srv/site
+  file_server
+}
+
+api.pulseo.me {
+  import api_common
+}
+
+admin.pulseo.me {
+  respond "Pulseo admin shell is not deployed yet" 200
+}
