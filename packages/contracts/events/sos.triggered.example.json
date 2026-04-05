@@ -1,0 +1,22 @@
+{
+  "event": "sos.triggered",
+  "version": "1.0",
+  "occurred_at": "2026-04-05T12:05:00Z",
+  "actor": {
+    "type": "user",
+    "id": "usr_123"
+  },
+  "subject": {
+    "type": "sos",
+    "id": "sos_123"
+  },
+  "data": {
+    "context": "high craving moment",
+    "note": "Need immediate grounding"
+  },
+  "meta": {
+    "source": "mobile",
+    "environment": "staging",
+    "trace_id": "trace_456"
+  }
+}
