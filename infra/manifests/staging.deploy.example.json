@@ -1,0 +1,25 @@
+{
+  "manifest_version": "0.1",
+  "execution_id": "deploy-staging-example",
+  "environment": "staging",
+  "artifact": {
+    "repo": "Sycko44/PulseoCore",
+    "ref": "main",
+    "commit_sha": "replace-me"
+  },
+  "inputs": {
+    "compose_file": "infra/compose/docker-compose.staging.certifiable.yml",
+    "env_file": "/etc/pulseo/staging.env",
+    "vault_path": "secret/data/pulseo/staging/runtime"
+  },
+  "runtime": {
+    "isolation": "container-nonroot",
+    "project_name": "pulseo-staging-certifiable",
+    "archive_path": "/opt/pulseo/archive"
+  },
+  "policy": {
+    "allow_network": true,
+    "allow_write_paths": ["/opt/pulseo/archive"],
+    "rollback_on_failure": true
+  }
+}
