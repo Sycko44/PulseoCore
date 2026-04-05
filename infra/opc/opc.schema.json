@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulseo.me/schemas/opc.schema.json",
+  "title": "Pulseo OPC",
+  "type": "object",
+  "required": [
+    "opc_version",
+    "execution_id",
+    "manifest_hash",
+    "result_code",
+    "started_at",
+    "finished_at"
+  ],
+  "properties": {
+    "opc_version": { "type": "string" },
+    "execution_id": { "type": "string" },
+    "manifest_hash": { "type": "string" },
+    "input_hash": { "type": "string" },
+    "output_hash": { "type": "string" },
+    "result_code": { "type": "integer" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "artifact_commit_sha": { "type": "string" },
+    "runner_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "archive_status": { "type": "string" },
+    "signature": { "type": "string" }
+  },
+  "additionalProperties": false
+}
