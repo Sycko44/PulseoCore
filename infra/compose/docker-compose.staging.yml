@@ -1,0 +1,59 @@
+version: '3.9'
+services:
+  caddy:
+    image: caddy:2.8
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../caddy/site:/srv/site:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ../..
+      dockerfile: services/api/Dockerfile
+    env_file:
+      - /etc/pulseo/staging.env
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    image: python:3.12-slim
+    working_dir: /app
+    command: python services/worker/worker.py
+    env_file:
+      - /etc/pulseo/staging.env
+    volumes:
+      - ../../:/app
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    env_file:
+      - /etc/pulseo/staging.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  postgres_staging_data:
+  caddy_data:
+  caddy_config:
