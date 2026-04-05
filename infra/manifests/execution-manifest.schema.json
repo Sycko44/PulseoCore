@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulseo.me/schemas/execution-manifest.schema.json",
+  "title": "Pulseo execution manifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "execution_id",
+    "environment",
+    "artifact",
+    "inputs",
+    "runtime",
+    "policy"
+  ],
+  "properties": {
+    "manifest_version": { "type": "string" },
+    "execution_id": { "type": "string" },
+    "environment": { "type": "string", "enum": ["staging", "prod"] },
+    "artifact": {
+      "type": "object",
+      "required": ["repo", "ref", "commit_sha"],
+      "properties": {
+        "repo": { "type": "string" },
+        "ref": { "type": "string" },
+        "commit_sha": { "type": "string" },
+        "bundle_hash": { "type": "string" },
+        "signature": { "type": "string" }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "compose_file": { "type": "string" },
+        "env_file": { "type": "string" },
+        "vault_path": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["isolation", "project_name"],
+      "properties": {
+        "isolation": { "type": "string", "enum": ["container-rootless", "container-nonroot"] },
+        "project_name": { "type": "string" },
+        "archive_path": { "type": "string" }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["allow_network", "allow_write_paths"],
+      "properties": {
+        "allow_network": { "type": "boolean" },
+        "allow_write_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rollback_on_failure": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": false
+}
