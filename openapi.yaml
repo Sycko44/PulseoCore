@@ -1,0 +1,409 @@
+openapi: 3.1.0
+info:
+  title: PulseoCore API
+  version: 0.1.0
+  summary: MVP API for the first Android release connected to the VPS.
+servers:
+  - url: https://api.pulseo.example.com/v1
+    description: Production
+  - url: https://staging-api.pulseo.example.com/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Local
+security:
+  - bearerAuth: []
+tags:
+  - name: health
+  - name: auth
+  - name: profile
+  - name: checkins
+  - name: cravings
+  - name: rituals
+  - name: sos
+  - name: phoenix
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Healthcheck for API availability.
+      security: []
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  environment:
+                    type: string
+                    example: staging
+                  version:
+                    type: string
+                    example: 0.1.0
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Register a new user.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSession'
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Login with email and password.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Session created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSession'
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Session refreshed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSession'
+  /me:
+    get:
+      tags: [profile]
+      summary: Return the current user profile.
+      responses:
+        '200':
+          description: Current profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+  /checkins:
+    get:
+      tags: [checkins]
+      summary: List recent check-ins.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Recent check-ins.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Checkin'
+    post:
+      tags: [checkins]
+      summary: Create a new check-in.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckinCreate'
+      responses:
+        '201':
+          description: Check-in created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Checkin'
+  /cravings:
+    get:
+      tags: [cravings]
+      summary: List recent craving entries.
+      responses:
+        '200':
+          description: Recent cravings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CravingEntry'
+    post:
+      tags: [cravings]
+      summary: Create a craving entry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CravingCreate'
+      responses:
+        '201':
+          description: Craving entry created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CravingEntry'
+  /rituals:
+    get:
+      tags: [rituals]
+      summary: Return the rituals available to the current user.
+      responses:
+        '200':
+          description: Ritual catalog.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ritual'
+  /rituals/{ritualId}/complete:
+    post:
+      tags: [rituals]
+      summary: Mark a ritual as completed.
+      parameters:
+        - in: path
+          name: ritualId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ritual completion recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RitualCompletion'
+  /sos:
+    post:
+      tags: [sos]
+      summary: Trigger the SOS flow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SosTrigger'
+      responses:
+        '200':
+          description: SOS response generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SosResponse'
+  /phoenix:
+    get:
+      tags: [phoenix]
+      summary: Return current Phoenix progression summary.
+      responses:
+        '200':
+          description: Phoenix summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoenixSummary'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, displayName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        displayName:
+          type: string
+          minLength: 1
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    AuthSession:
+      type: object
+      required: [accessToken, refreshToken, user]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserProfile'
+    UserProfile:
+      type: object
+      required: [id, email, displayName]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        timezone:
+          type: string
+          example: Europe/Paris
+    CheckinCreate:
+      type: object
+      required: [mood, energy, cravings]
+      properties:
+        mood:
+          type: integer
+          minimum: 0
+          maximum: 10
+        energy:
+          type: integer
+          minimum: 0
+          maximum: 10
+        cravings:
+          type: integer
+          minimum: 0
+          maximum: 10
+        sleepHours:
+          type: number
+          minimum: 0
+        notes:
+          type: string
+    Checkin:
+      allOf:
+        - $ref: '#/components/schemas/CheckinCreate'
+        - type: object
+          required: [id, createdAt]
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+    CravingCreate:
+      type: object
+      required: [intensity]
+      properties:
+        intensity:
+          type: integer
+          minimum: 0
+          maximum: 10
+        trigger:
+          type: string
+        notes:
+          type: string
+    CravingEntry:
+      allOf:
+        - $ref: '#/components/schemas/CravingCreate'
+        - type: object
+          required: [id, createdAt]
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+    Ritual:
+      type: object
+      required: [id, title, durationMinutes]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        durationMinutes:
+          type: integer
+          minimum: 1
+    RitualCompletion:
+      type: object
+      required: [ritualId, completedAt]
+      properties:
+        ritualId:
+          type: string
+        completedAt:
+          type: string
+          format: date-time
+    SosTrigger:
+      type: object
+      properties:
+        context:
+          type: string
+        note:
+          type: string
+    SosResponse:
+      type: object
+      required: [status, protocol]
+      properties:
+        status:
+          type: string
+          example: acknowledged
+        protocol:
+          type: array
+          items:
+            type: string
+    PhoenixSummary:
+      type: object
+      required: [score, streakDays]
+      properties:
+        score:
+          type: integer
+        streakDays:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
