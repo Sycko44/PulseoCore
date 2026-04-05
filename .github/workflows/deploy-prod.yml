@@ -1,0 +1,27 @@
+name: deploy-prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to deploy
+        required: false
+        default: main
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, pulseo]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Audit VPS baseline
+        run: bash scripts/vps_audit.sh
+
+      - name: Deploy production
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN_PROD }}
+        run: bash scripts/deploy.sh prod ${{ github.sha }}
