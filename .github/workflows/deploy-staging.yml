@@ -1,0 +1,22 @@
+name: deploy-staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, pulseo]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit VPS baseline
+        run: bash scripts/vps_audit.sh
+
+      - name: Deploy staging
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN_STAGING }}
+        run: bash scripts/deploy.sh staging ${{ github.sha }}
