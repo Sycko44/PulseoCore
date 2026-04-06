@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080810">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono&display=swap" rel="stylesheet">
+<title>PULSEO</title>
+<style>
+:root {
+  --bg: #080810;
+  --surf: #10101c;
+  --brd: #1c1c30;
+  --acc: #6c5fff;
+  --acc2: #ff5f9e;
+  --txt: #ddddf0;
+  --mut: #44445a;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; overflow:hidden; }
+body {
+  background:var(--bg);
+  color:var(--txt);
+  font-family:'DM Mono',monospace;
+  display:flex;
+  flex-direction:column;
+  height:100dvh;
+}
+header {
+  display:flex;
+  align-items:center;
+  padding:14px 18px;
+  border-bottom:1px solid var(--brd);
+  gap:10px;
+  flex-shrink:0;
+}
+.logo {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:17px;
+  letter-spacing:.12em;
+  background:linear-gradient(120deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.pill {
+  margin-left:auto;
+  background:var(--surf);
+  border:1px solid var(--brd);
+  border-radius:20px;
+  padding:4px 10px;
+  font-size:10px;
+  color:var(--mut);
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.dot {
+  width:5px;height:5px;
+  border-radius:50%;
+  background:#4ade80;
+  animation:blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+#msgs {
+  flex:1;
+  overflow-y:auto;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  scroll-behavior:smooth;
+}
+#msgs::-webkit-scrollbar { width:2px; }
+#msgs::-webkit-scrollbar-thumb { background:var(--brd); }
+.bubble {
+  max-width:86%;
+  padding:11px 15px;
+  border-radius:16px;
+  font-size:13px;
+  line-height:1.65;
+  animation:up .25s ease;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+@keyframes up { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.bubble.u {
+  background:var(--surf);
+  border:1px solid var(--acc);
+  border-bottom-right-radius:3px;
+  align-self:flex-end;
+}
+.bubble.a {
+  background:var(--surf);
+  border:1px solid var(--brd);
+  border-bottom-left-radius:3px;
+  align-self:flex-start;
+  position:relative;
+}
+.bubble.a::before {
+  content:'PULSEO';
+  position:absolute;
+  top:-16px; left:0;
+  font-size:8px;
+  letter-spacing:.2em;
+  color:var(--acc);
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+}
+.welcome {
+  text-align:center;
+  padding:30px 10px;
+  color:var(--mut);
+  font-size:12px;
+  line-height:1.9;
+}
+.welcome h2 {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:20px;
+  margin-bottom:6px;
+  background:linear-gradient(120deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.chips {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  justify-content:center;
+  margin-top:16px;
+}
+.chip {
+  background:var(--surf);
+  border:1px solid var(--brd);
+  border-radius:18px;
+  padding:7px 13px;
+  font-size:11px;
+  color:var(--mut);
+  cursor:pointer;
+}
+.chip:active { border-color:var(--acc); color:var(--acc); }
+.typing {
+  display:flex;
+  gap:4px;
+  padding:12px 15px;
+  align-self:flex-start;
+}
+.typing span {
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--acc);
+  animation:bounce 1.1s infinite;
+}
+.typing span:nth-child(2){animation-delay:.18s}
+.typing span:nth-child(3){animation-delay:.36s}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-5px);opacity:1}}
+footer {
+  display:flex;
+  gap:8px;
+  padding:10px 14px 18px;
+  border-top:1px solid var(--brd);
+  align-items:flex-end;
+  flex-shrink:0;
+}
+#inp {
+  flex:1;
+  background:var(--surf);
+  border:1px solid var(--brd);
+  border-radius:13px;
+  padding:11px 14px;
+  color:var(--txt);
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  resize:none;
+  outline:none;
+  min-height:42px;
+  max-height:110px;
+  line-height:1.5;
+  transition:border-color .2s;
+}
+#inp:focus{border-color:var(--acc)}
+#inp::placeholder{color:var(--mut)}
+#btn {
+  width:42px;height:42px;
+  border-radius:11px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  transition:transform .15s;
+}
+#btn:active{transform:scale(.9)}
+#btn:disabled{opacity:.4}
+#btn svg{width:17px;height:17px;fill:white}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">PULSEO</div>
+  <div class="pill"><div class="dot"></div>qwen3:14b</div>
+</header>
+<div id="msgs">
+  <div class="welcome" id="w">
+    <h2>Bonjour Rémi</h2>
+    <p>Ollama actif sur VPS.<br>Ton cerveau distant est prêt.</p>
+    <div class="chips">
+      <div class="chip" onclick="use(this)">Analyse mon VPS</div>
+      <div class="chip" onclick="use(this)">Idée PULSEO</div>
+      <div class="chip" onclick="use(this)">Code Python</div>
+      <div class="chip" onclick="use(this)">Optimise mon téléphone</div>
+    </div>
+  </div>
+</div>
+<footer>
+  <textarea id="inp" placeholder="Message…" rows="1"
+    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();go()}"
+    oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px'"></textarea>
+  <button id="btn" onclick="go()">
+    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+  </button>
+</footer>
+<script>
+const M=document.getElementById('msgs');
+const I=document.getElementById('inp');
+const B=document.getElementById('btn');
+let H=[];
+
+function use(el){I.value=el.textContent;go()}
+
+function add(role,txt){
+  const d=document.createElement('div');
+  d.className='bubble '+role;
+  d.textContent=txt;
+  M.appendChild(d);
+  M.scrollTop=M.scrollHeight;
+  return d;
+}
+
+function loader(){
+  const d=document.createElement('div');
+  d.className='typing';
+  d.innerHTML='<span></span><span></span><span></span>';
+  M.appendChild(d);
+  M.scrollTop=M.scrollHeight;
+  return d;
+}
+
+async function go(){
+  const t=I.value.trim();
+  if(!t||B.disabled)return;
+  document.getElementById('w')?.remove();
+  add('u',t);
+  H.push({role:'user',content:t});
+  I.value='';I.style.height='auto';
+  B.disabled=true;
+  const l=loader();
+  try{
+    const r=await fetch('/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:t,history:H.slice(-10)})
+    });
+    l.remove();
+    const d=add('a','');
+    const rd=r.body.getReader();
+    const dc=new TextDecoder();
+    let full='';
+    while(true){
+      const{done,value}=await rd.read();
+      if(done)break;
+      full+=dc.decode(value);
+      d.textContent=full;
+      M.scrollTop=M.scrollHeight;
+    }
+    H.push({role:'assistant',content:full});
+  }catch(e){
+    l.remove();
+    add('a','⚠️ VPS inaccessible. Vérifie ta connexion.');
+  }
+  B.disabled=false;
+  I.focus();
+}
+</script>
+</body>
+</html>
