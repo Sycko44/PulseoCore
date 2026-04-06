@@ -1,0 +1,38 @@
+name: deploy-minimum
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'services/api/**'
+      - 'infra/**'
+      - 'scripts/**'
+      - 'legacy/vps_existing/**'
+      - '.github/workflows/deploy-minimum.yml'
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, pulseo]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit VPS baseline
+        run: bash scripts/vps_audit.sh
+
+      - name: Verify minimum app files
+        run: |
+          test -f services/api/pulseo_minimum.py
+          test -f services/api/Dockerfile.minimum
+          test -f infra/compose/docker-compose.minimum.yml
+          test -f scripts/deploy_minimum.sh
+
+      - name: Deploy minimum
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN_STAGING }}
+        run: bash scripts/deploy_minimum.sh staging ${{ github.sha }}
+
+      - name: Healthcheck minimum
+        run: bash scripts/healthcheck_minimum.sh staging
