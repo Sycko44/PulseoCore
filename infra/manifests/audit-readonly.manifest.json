@@ -1,0 +1,21 @@
+{
+  "name": "audit-socle-readonly",
+  "created_at": "20260426_143015",
+  "mode": "readonly",
+  "requires_human_validation": false,
+  "allowed_actions": [
+    "read_services",
+    "read_ports",
+    "read_health",
+    "read_disk",
+    "read_memory"
+  ],
+  "forbidden_actions": [
+    "restart_service",
+    "stop_service",
+    "modify_file",
+    "delete_file",
+    "install_package",
+    "change_firewall"
+  ]
+}

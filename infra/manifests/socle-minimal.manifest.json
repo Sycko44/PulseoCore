@@ -1,0 +1,37 @@
+{
+  "name": "socle-minimal-pulseo",
+  "created_at": "20260426_143015",
+  "mode": "validation-only",
+  "target": "vps",
+  "requires_human_validation": true,
+  "scope": "socle-only",
+  "allowed_actions": [
+    "healthcheck",
+    "freeze",
+    "audit_readonly",
+    "archive_legacy_copy"
+  ],
+  "forbidden_actions": [
+    "delete",
+    "disable_security",
+    "direct_deploy_without_receipt",
+    "modify_socle_without_manifest",
+    "install_new_application",
+    "modify_application_logic"
+  ],
+  "services": [
+    "nginx.service",
+    "ollama.service",
+    "pulseo-minimum.service"
+  ],
+  "public_ports": [
+    22,
+    80,
+    443
+  ],
+  "local_ports": [
+    8000,
+    8200,
+    11434
+  ]
+}
