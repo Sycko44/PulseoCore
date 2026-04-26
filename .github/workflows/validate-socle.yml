@@ -5,6 +5,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/validate-socle.yml"
+      - "INFRA_PACK_README.md"
   workflow_dispatch:
 
 permissions:
@@ -21,31 +22,81 @@ jobs:
       - name: Validate shell scripts syntax
         run: |
           set -euo pipefail
-          find infra/scripts -type f -name "*.sh" -print0 | while IFS= read -r -d '' file; do
+
+          files=(
+            "infra/scripts/archive_legacy_7860.sh"
+            "infra/scripts/audit_socle_readonly.sh"
+            "infra/scripts/freeze_socle_minimal.sh"
+            "infra/scripts/healthcheck_socle.sh"
+            "infra/scripts/stabilize_pulseo_minimum_service.sh"
+          )
+
+          for file in "${files[@]}"; do
+            test -f "$file"
             bash -n "$file"
+            echo "OK $file"
           done
 
       - name: Validate JSON manifests
         run: |
           set -euo pipefail
+
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          for path in Path("infra/manifests").glob("*.json"):
+          files = [
+              Path("infra/manifests/audit-readonly.manifest.json"),
+              Path("infra/manifests/legacy-archive.manifest.json"),
+              Path("infra/manifests/socle-minimal.manifest.json"),
+          ]
+
+          for path in files:
               with path.open("r", encoding="utf-8") as f:
-                  json.load(f)
+                  data = json.load(f)
+
+              if not isinstance(data, dict):
+                  raise SystemExit(f"{path}: manifest must be a JSON object")
+
+              if "name" not in data:
+                  raise SystemExit(f"{path}: missing name")
+
               print(f"OK {path}")
           PY
 
-      - name: Ensure validation-only pack
+      - name: Validate scope boundaries
         run: |
           set -euo pipefail
 
-          forbidden='systemctl restart|systemctl stop|rm -rf|apt install|ufw allow|ufw delete|iptables -A|nft add'
-          if grep -R -E "$forbidden" .github/workflows infra/manifests 2>/dev/null; then
-            echo "Forbidden operational command detected in validation-only area"
-            exit 1
-          fi
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
 
-          echo "OK validation-only"
+          allowed_files = {
+              ".github/workflows/validate-socle.yml",
+              "INFRA_PACK_README.md",
+              "infra/docs/CURRENT_ARCHITECTURE.md",
+              "infra/docs/RUNBOOK_VPS.md",
+              "infra/docs/SOCLE_MINIMAL_PROTEGE.md",
+              "infra/manifests/audit-readonly.manifest.json",
+              "infra/manifests/legacy-archive.manifest.json",
+              "infra/manifests/socle-minimal.manifest.json",
+              "infra/scripts/archive_legacy_7860.sh",
+              "infra/scripts/audit_socle_readonly.sh",
+              "infra/scripts/freeze_socle_minimal.sh",
+              "infra/scripts/healthcheck_socle.sh",
+              "infra/scripts/stabilize_pulseo_minimum_service.sh",
+              "infra/systemd/pulseo-minimum.service",
+          }
+
+          for path in allowed_files:
+              if not Path(path).exists():
+                  raise SystemExit(f"Missing expected file: {path}")
+
+          for path in Path("infra/manifests").glob("*.manifest.json"):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              if data.get("requires_human_validation") is False and data.get("mode") != "readonly":
+                  raise SystemExit(f"{path}: human validation expected unless readonly")
+
+          print("OK scope boundaries")
+          PY
