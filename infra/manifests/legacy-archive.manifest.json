@@ -1,0 +1,18 @@
+{
+  "name": "legacy-archive-7860",
+  "created_at": "20260426_143015",
+  "mode": "archive-only",
+  "requires_human_validation": true,
+  "legacy_port": 7860,
+  "rule": "must_not_restart_without_manifest",
+  "allowed_actions": [
+    "copy_archive",
+    "hash_manifest",
+    "read_only_review"
+  ],
+  "forbidden_actions": [
+    "restart_legacy",
+    "make_persistent",
+    "expose_publicly"
+  ]
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=Pulseo Minimum API
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/PulseoCore/services/api
+EnvironmentFile=/home/ubuntu/PulseoCore/services/api/.runtime.env
+ExecStart=/home/ubuntu/.venvs/pulseo_minimum/bin/python -m uvicorn pulseo_minimum:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
